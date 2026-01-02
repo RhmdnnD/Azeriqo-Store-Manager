@@ -4,12 +4,6 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
-
 // 1. HALAMAN DEPAN (Generator Publik) - Kita beri nama 'home'
 Route::get('/', function () {
     return view('welcome');

@@ -39,8 +39,6 @@ class AccountController extends Controller
         return view('pages.log', compact('logs'));
     }
 
-    public function generator() { return view('pages.generator'); }
-
     // --- PROSES SIMPAN AKUN ---
     public function store(Request $request)
     {
