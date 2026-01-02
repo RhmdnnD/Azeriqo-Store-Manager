@@ -1,0 +1,66 @@
+@extends('layout')
+
+@section('content')
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h1 class="page-title">Database Akun</h1>
+            <p class="page-subtitle">Kelola stok akun game Anda di sini.</p>
+        </div>
+        <a href="{{ route('account.create') }}" style="background: var(--primary); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Tambah Akun
+        </a>
+    </div>
+
+    @forelse($accounts as $category => $items)
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px;">
+                <h3 style="color: var(--primary); font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                    {{ $category }}
+                </h3>
+                <span style="background: #eef2ff; color: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">
+                    {{ count($items) }} ITEM
+                </span>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+                @foreach($items as $acc)
+                <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 15px; transition: 0.2s; position: relative;">
+                    
+                    <div style="font-family: 'Courier New', monospace; font-weight: 600; color: var(--text-main); font-size: 0.95rem; margin-bottom: 10px; word-break: break-all;">
+                        {{ $acc->username }} | {{ $acc->password }}
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                        <button onclick="window.copyText('usn: {{ $acc->username }} || pass: {{ $acc->password }}')" 
+                            style="border: 1px solid var(--border); background: white; color: var(--text-main); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                            COPY
+                        </button>
+                        
+                        @if(Auth::user()->role == 'admin')
+                        <form action="{{ route('account.delete', $acc->id) }}" method="POST" onsubmit="return confirm('Hapus permanen?')" style="margin: 0;">
+                            @csrf @method('DELETE')
+                            <button style="border: 1px solid #fecaca; background: #fef2f2; color: var(--danger); padding: 5px 8px; border-radius: 6px; cursor: pointer;">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </form>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    @empty
+        <div style="text-align: center; padding: 60px 20px;">
+            <div style="background: #f1f5f9; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <svg width="40" height="40" stroke="#94a3b8" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+            </div>
+            <h3 style="color: var(--text-main); margin-bottom: 10px;">Database Kosong</h3>
+            <p style="color: #64748b; margin-bottom: 25px;">Belum ada akun yang tersimpan.</p>
+            <a href="{{ route('account.create') }}" style="color: var(--primary); font-weight: 600;">Input Akun Sekarang &rarr;</a>
+        </div>
+    @endforelse
+
+@endsection
