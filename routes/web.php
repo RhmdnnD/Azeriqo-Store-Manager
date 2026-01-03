@@ -45,4 +45,27 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/activity-log/clear', [AccountController::class, 'clearLogs'])->name('log.clear');
 });
 
+Route::get('/install-db-rahasia', function () {
+    try {
+        // 1. Bersihkan Cache Config
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+
+        // 2. Jalankan Migrasi (Membuat Tabel)
+        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
+        
+        // 3. Buat Akun Admin Manual
+        \App\Models\User::create([
+            'name' => 'Owner Azeriqo',
+            'email' => 'admin@azeriqo.com', // Email Login Admin
+            'password' => \Illuminate\Support\Facades\Hash::make('password123'), // Password Login
+            'role' => 'admin',
+        ]);
+
+        return "<h1>SUKSES!</h1> <p>Database berhasil di-install dan Admin dibuat.</p> <p>Silakan Login dengan: <b>admin@azeriqo.com</b> / <b>password123</b></p>";
+    
+    } catch (\Exception $e) {
+        return "<h1>ERROR!</h1> <p>" . $e->getMessage() . "</p>";
+    }
+});
+
 require __DIR__.'/auth.php';
