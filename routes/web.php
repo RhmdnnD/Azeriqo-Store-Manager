@@ -39,6 +39,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/manage-workers', [WorkerController::class, 'index'])->name('workers.index');
     Route::post('/manage-workers', [WorkerController::class, 'store'])->name('workers.store');
     Route::delete('/manage-workers/{id}', [WorkerController::class, 'destroy'])->name('workers.delete');
+
+    Route::put('/account/{id}', [AccountController::class, 'update'])->name('account.update');
+
+    Route::delete('/activity-log/clear', [AccountController::class, 'clearLogs'])->name('log.clear');
 });
 
 require __DIR__.'/auth.php';

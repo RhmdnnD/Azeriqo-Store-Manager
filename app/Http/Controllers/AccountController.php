@@ -97,4 +97,36 @@ class AccountController extends Controller
         Category::destroy($id);
         return redirect()->back()->with('success', 'Kategori dihapus.');
     }
+
+    public function update(Request $request, $id)
+    {
+        // 1. Cek Admin
+        if (Auth::user()->role !== 'admin') { return abort(403); }
+
+        // 2. Validasi
+        $request->validate([
+            'password' => 'required|string|min:1',
+        ]);
+
+        // 3. Cari dan Update
+        $account = Account::findOrFail($id);
+        $account->update([
+            'password' => $request->password
+        ]);
+
+        return redirect()->back()->with('success', 'Password berhasil diperbarui!');
+    }
+
+    public function clearLogs()
+    {
+        // 1. Pastikan hanya Admin
+        if (Auth::user()->role !== 'admin') { return abort(403); }
+
+        // 2. Kosongkan Tabel Account
+        // truncate() akan menghapus semua data dan mereset ID kembali ke 1
+        Account::truncate();
+
+        return redirect()->back()->with('success', 'Semua riwayat log & data akun berhasil dibersihkan.');
+    }
+
 }

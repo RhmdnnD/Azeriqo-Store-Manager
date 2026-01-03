@@ -22,20 +22,29 @@
                 
                 <div style="margin-bottom: 15px;">
                     <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.85rem;">Nama Worker</label>
-                    <input type="text" name="name" placeholder="Nama Lengkap" required
+                    <input type="text" name="name" value="{{ old('name') }}" placeholder="Nama Lengkap" required
                            style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                    @error('name')
+                        <div style="color: #ef4444; font-size: 0.8rem; margin-top: 5px;">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div style="margin-bottom: 15px;">
                     <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.85rem;">Email Login</label>
-                    <input type="email" name="email" placeholder="worker@azeriqo.com" required
+                    <input type="email" name="email" value="{{ old('email') }}" placeholder="worker@azeriqo.com" required
                            style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                    @error('email')
+                        <div style="color: #ef4444; font-size: 0.8rem; margin-top: 5px;">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.85rem;">Password</label>
-                    <input type="text" name="password" placeholder="Password akun" required
+                    <input type="text" name="password" placeholder="Password akun (Min. 8 karakter)" required
                            style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                    @error('password')
+                        <div style="color: #ef4444; font-size: 0.8rem; margin-top: 5px;">{{ $message }}</div>
+                    @enderror
                 </div>
                 
                 <button type="submit" style="width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
@@ -66,7 +75,9 @@
                     
                     <form action="{{ route('workers.delete', $worker->id) }}" method="POST" onsubmit="return confirmDelete(event, this)" style="margin: 0;">
                         @csrf @method('DELETE')
-                        <button style="background: white; border: 1px solid #fecaca; color: var(--danger); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 5px;">
+                        <button type="button" 
+                            onclick="confirmDelete('{{ route('workers.delete', $worker->id) }}')"
+                            style="background: white; border: 1px solid #fecaca; color: var(--danger); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 5px;">
                             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             HAPUS
                         </button>

@@ -44,12 +44,12 @@
             <div style="display: flex; gap: 20px; margin-bottom: 20px;">
                 <div style="flex: 1;">
                     <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-main);">Panjang Karakter</label>
-                    <input type="number" id="length" value="8" min="4" max="20" 
+                    <input type="number" id="length" value="4" min="4" max="20" 
                            style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: #f8fafc;">
                 </div>
                 <div style="flex: 1;">
                     <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-main);">Jumlah Generate</label>
-                    <input type="number" id="quantity" value="5" min="1" max="50" 
+                    <input type="number" id="quantity" value="1" min="1" max="50" 
                            style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: #f8fafc;">
                 </div>
             </div>
