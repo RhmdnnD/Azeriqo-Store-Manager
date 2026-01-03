@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WorkerController;
 
 // 1. HALAMAN DEPAN (Generator Publik) - Kita beri nama 'home'
 Route::get('/', function () {
@@ -34,6 +35,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/settings', [AccountController::class, 'settings'])->name('settings');
     Route::post('/settings', [AccountController::class, 'storeCategory'])->name('settings.store');
     Route::delete('/settings/{id}', [AccountController::class, 'destroyCategory'])->name('settings.delete');
+
+    Route::get('/manage-workers', [WorkerController::class, 'index'])->name('workers.index');
+    Route::post('/manage-workers', [WorkerController::class, 'store'])->name('workers.store');
+    Route::delete('/manage-workers/{id}', [WorkerController::class, 'destroy'])->name('workers.delete');
 });
 
 require __DIR__.'/auth.php';

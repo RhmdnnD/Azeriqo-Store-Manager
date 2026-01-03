@@ -36,8 +36,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;">
                     <span style="font-weight: 600; color: var(--text-main);">{{ $cat->name }}</span>
                     
-                    <form action="{{ route('settings.delete', $cat->id) }}" method="POST" onsubmit="return confirm('Hapus kategori ini?')" style="margin: 0;">
-                        @csrf @method('DELETE')
+                    <form action="{{ route('settings.delete', $cat->id) }}" method="POST" onsubmit="return confirmDelete(event, this)" style="margin: 0;">
                         <button style="background: white; border: 1px solid #fecaca; color: var(--danger); padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">
                             HAPUS
                         </button>

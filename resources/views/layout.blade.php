@@ -48,6 +48,42 @@
         .toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
         .toast-box { pointer-events: auto; background: white; border-left: 4px solid var(--success); padding: 16px 20px; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); display: flex; align-items: center; gap: 12px; min-width: 300px; animation: slideIn 0.3s ease-out forwards; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* --- MODAL CONFIRMATION --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); z-index: 99999;
+            display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(2px); opacity: 0; transition: opacity 0.2s;
+        }
+        .modal-overlay.show { opacity: 1; }
+        .modal-box {
+            background: white; width: 100%; max-width: 400px;
+            padding: 30px; border-radius: 16px; text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: scale(0.9); transition: transform 0.2s;
+        }
+        .modal-overlay.show .modal-box { transform: scale(1); }
+        .modal-icon {
+            width: 60px; height: 60px; background: #fee2e2; color: #ef4444;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .modal-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin-bottom: 10px; }
+        .modal-desc { color: #64748b; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.5; }
+        .modal-actions { display: flex; gap: 10px; justify-content: center; }
+        .btn-modal-cancel {
+            background: white; border: 1px solid var(--border); color: var(--text-main);
+            padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;
+            flex: 1; transition: 0.2s;
+        }
+        .btn-modal-cancel:hover { background: #f1f5f9; }
+        .btn-modal-delete {
+            background: var(--danger); border: none; color: white;
+            padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;
+            flex: 1; transition: 0.2s; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+        }
+        .btn-modal-delete:hover { background: #dc2626; }
         
         @media (max-width: 768px) { .sidebar { transform: translateX(-100%); transition: 0.3s; } .main-wrapper { margin-left: 0; padding: 20px; } }
     </style>
@@ -103,6 +139,26 @@
                 document.body.removeChild(textArea);
             }
         };
+
+        // 3. LOGIKA MODAL DELETE GLOBAL
+        let deleteFormTarget = null;
+
+        window.confirmDelete = function(event, form) {
+            event.preventDefault(); // Stop submit asli
+            deleteFormTarget = form; // Simpan form yang mau dihapus
+            
+            const modal = document.getElementById('confirm-modal');
+            modal.style.display = 'flex';
+            // Sedikit delay biar animasi CSS jalan
+            setTimeout(() => { modal.classList.add('show'); }, 10);
+        };
+
+        window.closeModal = function() {
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.remove('show');
+            setTimeout(() => { modal.style.display = 'none'; }, 200);
+            deleteFormTarget = null;
+        };
     </script>
 </head>
 <body>
@@ -117,6 +173,20 @@
             </div>
         </div>
         @endif
+    </div>
+
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-icon">
+                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </div>
+            <h3 class="modal-title">Hapus Data?</h3>
+            <p class="modal-desc">Tindakan ini tidak dapat dibatalkan. Data akan hilang secara permanen dari database.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-modal-cancel" onclick="closeModal()">Batal</button>
+                <button type="button" id="confirm-btn-action" class="btn-modal-delete">Ya, Hapus</button>
+            </div>
+        </div>
     </div>
 
     <aside class="sidebar">
@@ -148,17 +218,22 @@
                 Input Manual
             </a>
 
+            @if(Auth::user()->role == 'admin')
+            <a href="{{ route('workers.index') }}" class="nav-link {{ Request::is('manage-workers') ? 'active' : '' }}">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                Kelola Workers
+            </a>
+
+            <a href="{{ route('settings') }}" class="nav-link {{ Request::is('settings') ? 'active' : '' }}">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                Settings
+            </a>
+            @endif
+
             <a href="{{ route('account.log') }}" class="nav-link {{ Request::is('activity-log') ? 'active' : '' }}">
                 <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Log Aktivitas
             </a>
-
-            @if(Auth::user()->role == 'admin')
-            <a href="{{ route('settings') }}" class="nav-link {{ Request::is('settings') ? 'active' : '' }}">
-                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                Settings Toko
-            </a>
-            @endif
 
             @endauth
         </nav>
@@ -202,6 +277,28 @@
                 "interactivity": { "events": { "onhover": { "enable": true, "mode": "grab" } } }
             });
         }
+
+        // --- Event Listener untuk Tombol Hapus ---
+        document.addEventListener('DOMContentLoaded', function() {
+            // Pasang event listener ke tombol konfirmasi di modal
+            const confirmBtn = document.getElementById('confirm-btn-action');
+            if (confirmBtn) {
+                confirmBtn.onclick = function() {
+                    if (deleteFormTarget) {
+                        deleteFormTarget.submit(); // Lanjutkan submit form
+                    }
+                    closeModal();
+                };
+            }
+
+            // Tutup modal jika klik di luar box
+            const modalOverlay = document.getElementById('confirm-modal');
+            if (modalOverlay) {
+                modalOverlay.onclick = function(e) {
+                    if (e.target === this) closeModal();
+                };
+            }
+        });
     </script>
 </body>
 </html>
