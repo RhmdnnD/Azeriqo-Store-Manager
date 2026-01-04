@@ -30,21 +30,38 @@
         /* --- SIDEBAR --- */
         .sidebar { 
             width: var(--sidebar-width); background: var(--bg-surface); 
-            border-right: 1px solid var(--border); height: 100vh; 
+            border-right: 1px solid var(--border); 
+            height: 100vh; /* Fallback */
+            height: 100dvh; /* Full height di mobile browser modern */
             position: fixed; left: 0; top: 0; 
             display: flex; flex-direction: column; padding: 24px; z-index: 50; 
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .brand { font-size: 1.25rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
+        .brand { font-size: 1.25rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; margin-bottom: 30px; flex-shrink: 0; }
         .brand span { color: var(--primary); }
         .brand img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); }
         
-        .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: #64748b; font-weight: 500; font-size: 0.95rem; border-radius: 8px; transition: all 0.2s ease; }
+        /* Navigasi Scrollable (PENTING AGAR PANEL BAWAH TIDAK HILANG) */
+        .nav-menu { 
+            list-style: none; display: flex; flex-direction: column; gap: 8px; flex: 1; 
+            overflow-y: auto; /* Menu bisa discroll */
+            padding-right: 5px; /* Ruang scrollbar */
+            margin-bottom: 10px;
+        }
+        /* Custom Scrollbar tipis untuk nav */
+        .nav-menu::-webkit-scrollbar { width: 4px; }
+        .nav-menu::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: #64748b; font-weight: 500; font-size: 0.95rem; border-radius: 8px; transition: all 0.2s ease; flex-shrink: 0; }
         .nav-link:hover { background: #f1f5f9; color: var(--primary); }
         .nav-link.active { background: #eef2ff; color: var(--primary); font-weight: 600; }
         .nav-icon { width: 20px; height: 20px; }
-        .user-panel { padding-top: 20px; border-top: 1px solid var(--border); }
+        
+        .user-panel { 
+            padding-top: 20px; border-top: 1px solid var(--border); 
+            flex-shrink: 0; /* Jangan menyusut */
+            background: var(--bg-surface); /* Pastikan background putih */
+        }
         .btn-logout { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.2s; }
         .btn-logout:hover { background: #fee2e2; }
         .btn-login { width: 100%; text-align: center; padding: 10px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; display: block; }
@@ -56,6 +73,10 @@
         .page-title { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
         .page-subtitle { color: #64748b; font-size: 0.9rem; margin-top: 4px; }
         #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+
+        /* --- UTILITY CLASSES --- */
+        .grid-responsive { display: grid; grid-template-columns: 1fr 1.5fr; gap: 24px; }
+        .header-responsive { display: flex; justify-content: space-between; align-items: end; margin-bottom: 30px; }
 
         /* --- NOTIFIKASI POPUP --- */
         .toast-container { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
@@ -83,17 +104,19 @@
             .sidebar { transform: translateX(-100%); box-shadow: none; }
             .sidebar.active { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.1); }
             
-            .main-wrapper { margin-left: 0; padding: 20px; padding-top: 80px; } /* Tambah padding atas utk tombol menu */
+            .main-wrapper { margin-left: 0; padding: 20px; padding-top: 80px; }
             
             .mobile-toggle { display: flex; align-items: center; justify-content: center; }
             .sidebar-backdrop.show { display: block; }
 
-            /* Agar tabel bisa di-scroll di HP */
+            /* Tabel Scrollable */
             .card { overflow-x: auto; }
-            table { min-width: 600px; } /* Paksa tabel lebar agar trigger scroll */
+            table { min-width: 600px; }
             
-            /* Grid Akun jadi 1 kolom di HP */
-            .page-title { font-size: 1.25rem; }
+            /* Responsive Utilities Update */
+            .grid-responsive { grid-template-columns: 1fr; gap: 24px; }
+            .header-responsive { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .header-responsive button { width: 100%; justify-content: center; }
         }
     </style>
 
@@ -153,12 +176,9 @@
             backdrop.classList.toggle('show');
         }
 
-        // --- INIT SCRIPTS ---
         document.addEventListener('DOMContentLoaded', function() {
-            // NProgress Config
             NProgress.configure({ showSpinner: false, speed: 500 });
             
-            // Delete Modal Listener
             const confirmBtn = document.getElementById('confirm-btn-action');
             if(confirmBtn) {
                 confirmBtn.onclick = function() {
@@ -171,11 +191,9 @@
                 };
             }
             
-            // Close Modals on Outside Click
             const modalOverlay = document.getElementById('confirm-modal');
             if(modalOverlay) modalOverlay.onclick = function(e) { if (e.target === this) closeModal(); };
 
-            // Close Mobile Sidebar on Link Click
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => {
                 link.addEventListener('click', function() {
@@ -183,7 +201,6 @@
                 });
             });
 
-            // NProgress Trigger
             document.addEventListener('click', function(e) {
                 const link = e.target.closest('a');
                 if (link && link.href && !link.href.startsWith('#') && !link.target && link.hostname === window.location.hostname) {
@@ -200,7 +217,6 @@
     <button class="mobile-toggle" onclick="toggleSidebar()">
         <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
     </button>
-
     <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
 
     <form id="global-delete-form" method="POST" style="display: none;">
@@ -234,6 +250,7 @@
         <div class="brand">
             <img src="{{ asset('images/logo.jpg') }}" alt="Logo"> AZERIQO<span>STORE</span>
         </div>
+        
         <nav class="nav-menu">
             <a href="{{ route('home') }}" class="nav-link {{ Request::is('/') ? 'active' : '' }}">
                 <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
@@ -265,21 +282,27 @@
             @endif
             @endauth
         </nav>
+
         <div class="user-panel">
             @auth
-            <div style="margin-bottom: 10px;">
-                <div style="font-weight: 600; font-size: 0.9rem;">{{ Auth::user()->name }}</div>
-                <div style="color: #64748b; font-size: 0.75rem;">{{ Auth::user()->role == 'admin' ? 'Administrator' : 'Worker Staff' }}</div>
-            </div>
-            <form method="POST" action="{{ route('logout') }}">@csrf<button class="btn-logout"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>Keluar</button></form>
+                <div style="margin-bottom: 10px;">
+                    <div style="font-weight: 600; font-size: 0.9rem;">{{ Auth::user()->name }}</div>
+                    <div style="color: #64748b; font-size: 0.75rem;">{{ Auth::user()->role == 'admin' ? 'Administrator' : 'Worker Staff' }}</div>
+                </div>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="btn-logout">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        Keluar
+                    </button>
+                </form>
             @else
-            <a href="{{ route('login') }}" class="btn-login">Login Staff</a>
+                <a href="{{ route('login') }}" class="btn-login">Login Staff</a>
             @endauth
         </div>
     </aside>
 
     <main class="main-wrapper">@yield('content')</main>
-
     <div id="particles-js"></div>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <script>

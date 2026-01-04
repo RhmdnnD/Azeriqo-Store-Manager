@@ -11,7 +11,7 @@
         </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 24px;">
+    <div class="grid-responsive">
         
         <div class="card" style="height: fit-content;">
             <h3 style="margin-bottom: 15px; font-size: 1rem; color: var(--text-main);">Tambah Kategori Baru</h3>

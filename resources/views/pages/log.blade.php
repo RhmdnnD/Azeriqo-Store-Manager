@@ -4,10 +4,10 @@
 
 <div style="max-width: 1000px; margin: 0 auto;">
 
-    <div style="display: flex; justify-content: space-between; align-items: end; margin-bottom: 30px;">
+    <div class="header-responsive">
         <div>
             <h1 class="page-title">Log Aktivitas</h1>
-            <p class="page-subtitle">Pantau riwayat penambahan akun oleh seluruh tim.</p>
+            <p class="page-subtitle">Pantau riwayat penambahan akun.</p>
         </div>
 
         @if(Auth::user()->role == 'admin' && $logs->count() > 0)
@@ -29,13 +29,13 @@
                         Waktu & Tanggal
                     </th>
                     <th style="padding: 16px 24px; font-weight: 600; font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">
-                        Worker / Pengirim
+                        Worker
                     </th>
                     <th style="padding: 16px 24px; font-weight: 600; font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">
                         Aktivitas
                     </th>
                     <th style="padding: 16px 24px; font-weight: 600; font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">
-                        Detail Akun
+                        Detail
                     </th>
                 </tr>
             </thead>
@@ -69,16 +69,15 @@
                                     {{ $log->user->name ?? 'User Terhapus' }}
                                 </div>
                                 <div style="font-size: 0.75rem; color: #64748b;">
-                                    {{ ($log->user->role ?? '') == 'admin' ? 'Administrator' : 'Staff Worker' }}
+                                    {{ ($log->user->role ?? '') == 'admin' ? 'Adm' : 'Stf' }}
                                 </div>
                             </div>
                         </div>
                     </td>
 
                     <td style="padding: 16px 24px; vertical-align: middle;">
-                        <span style="background: #ecfdf5; color: #059669; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
-                            <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                            INPUT DATA
+                        <span style="background: #ecfdf5; color: #059669; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700;">
+                            INPUT
                         </span>
                         <div style="margin-top: 5px; font-size: 0.85rem; font-weight: 500; color: var(--text-main);">
                             {{ $log->title }}
@@ -86,7 +85,7 @@
                     </td>
 
                     <td style="padding: 16px 24px; vertical-align: middle;">
-                        <div style="font-family: 'Courier New', monospace; font-size: 0.85rem; color: #475569; background: #f1f5f9; padding: 6px 10px; border-radius: 6px; display: inline-block; border: 1px solid #e2e8f0;">
+                        <div style="font-family: monospace; font-size: 0.85rem; color: #475569; background: #f1f5f9; padding: 6px 10px; border-radius: 6px; display: inline-block;">
                             {{ $log->username }}
                         </div>
                     </td>
@@ -94,12 +93,8 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" style="text-align: center; padding: 60px;">
-                        <div style="color: #cbd5e1; margin-bottom: 15px; display: flex; justify-content: center;">
-                            <svg width="50" height="50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        </div>
-                        <div style="font-weight: 600; color: #94a3b8; font-size: 1rem;">Belum ada aktivitas tercatat.</div>
-                        <p style="color: #cbd5e1; font-size: 0.85rem;">Data input worker akan muncul di sini.</p>
+                    <td colspan="4" style="text-align: center; padding: 40px;">
+                        <div style="color: #cbd5e1;">Belum ada data.</div>
                     </td>
                 </tr>
                 @endforelse
@@ -114,5 +109,4 @@
 
     </div>
 </div>
-
 @endsection
