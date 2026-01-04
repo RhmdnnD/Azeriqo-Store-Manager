@@ -2,6 +2,20 @@
 
 @section('content')
 
+    <style>
+        .scroll-area {
+            max-height: 450px; /* Batas tinggi (muat +- 6 akun / 2 baris) */
+            overflow-y: auto; /* Scroll aktif jika konten panjang */
+            padding-right: 5px; /* Jarak untuk scrollbar */
+        }
+
+        /* Desain Scrollbar Cantik (Tipis & Modern) */
+        .scroll-area::-webkit-scrollbar { width: 6px; }
+        .scroll-area::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .scroll-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .scroll-area::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+
     <div class="header-responsive">
         <div>
             <h1 class="page-title">Database Akun</h1>
@@ -14,8 +28,7 @@
     </div>
 
     @forelse($accounts as $category => $items)
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px;">
+        <div class="card" style="padding-bottom: 10px;"> <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px;">
                 <h3 style="color: var(--primary); font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
                     {{ $category }}
@@ -25,37 +38,38 @@
                 </span>
             </div>
             
-            <div class="grid-workers">
-                @foreach($items as $acc)
-                <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 15px; transition: 0.2s; position: relative;">
-                    
-                    <div style="font-family: 'Courier New', monospace; font-weight: 600; color: var(--text-main); font-size: 0.95rem; margin-bottom: 10px; word-break: break-all;">
-                        {{ $acc->username }} | <span id="pass-display-{{ $acc->id }}">{{ $acc->password }}</span>
-                    </div>
-
-                    <div style="display: flex; justify-content: flex-end; gap: 8px;">
-                        <button onclick="window.copyText('usn: {{ $acc->username }} || pass: {{ $acc->password }}')" 
-                            style="border: 1px solid var(--border); background: white; color: var(--text-main); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
-                            COPY
-                        </button>
+            <div class="scroll-area">
+                <div class="grid-workers" style="padding-bottom: 5px;"> 
+                    @foreach($items as $acc)
+                    <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 15px; transition: 0.2s; position: relative;">
                         
-                        @if(Auth::user()->role == 'admin')
-                        <button onclick="openEditModal('{{ $acc->id }}', '{{ $acc->username }}', '{{ $acc->password }}')"
-                            style="border: 1px solid var(--border); background: white; color: var(--primary); padding: 5px 8px; border-radius: 6px; cursor: pointer;">
-                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        </button>
+                        <div style="font-family: 'Courier New', monospace; font-weight: 600; color: var(--text-main); font-size: 0.95rem; margin-bottom: 10px; word-break: break-all;">
+                            {{ $acc->username }} | <span id="pass-display-{{ $acc->id }}">{{ $acc->password }}</span>
+                        </div>
 
-                        <button type="button" 
-                            onclick="confirmDelete('{{ route('account.delete', $acc->id) }}')"
-                            style="border: 1px solid #fecaca; background: #fef2f2; color: var(--danger); padding: 5px 8px; border-radius: 6px; cursor: pointer;">
-                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                        @endif
+                        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                            <button onclick="window.copyText('usn: {{ $acc->username }} || pass: {{ $acc->password }}')" 
+                                style="border: 1px solid var(--border); background: white; color: var(--text-main); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                                COPY
+                            </button>
+                            
+                            @if(Auth::user()->role == 'admin')
+                            <button onclick="openEditModal('{{ $acc->id }}', '{{ $acc->username }}', '{{ $acc->password }}')"
+                                style="border: 1px solid var(--border); background: white; color: var(--primary); padding: 5px 8px; border-radius: 6px; cursor: pointer;">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            </button>
+
+                            <button type="button" 
+                                onclick="confirmDelete('{{ route('account.delete', $acc->id) }}')"
+                                style="border: 1px solid #fecaca; background: #fef2f2; color: var(--danger); padding: 5px 8px; border-radius: 6px; cursor: pointer;">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                            @endif
+                        </div>
                     </div>
+                    @endforeach
                 </div>
-                @endforeach
-            </div>
-        </div>
+            </div> </div>
     @empty
         <div style="text-align: center; padding: 60px 20px;">
             <div style="background: #f1f5f9; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
