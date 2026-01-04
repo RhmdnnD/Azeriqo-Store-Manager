@@ -23,27 +23,33 @@
                 <div>
                     <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-main);">Kategori Akun</label>
                     <div style="position: relative;">
-                        <select name="category_id" required 
+                        <select name="title" required 
                             style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: #f8fafc; appearance: none; font-size: 0.95rem; color: var(--text-main);">
                             <option value="" disabled selected>-- Pilih Kategori --</option>
                             @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                <option value="{{ $cat->name }}">{{ $cat->name }}</option>
                             @endforeach
                         </select>
+                        
                         <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #64748b;">
                             <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </div>
                     </div>
                     @if($categories->count() == 0)
                         <div style="margin-top: 5px; font-size: 0.8rem; color: var(--danger);">
-                            ⚠ Belum ada kategori. <a href="{{ route('settings') }}" style="text-decoration: underline; color: var(--danger);">Buat dulu di Settings</a>.
+                            ⚠ Belum ada kategori. 
+                            @if(Auth::user()->role == 'admin')
+                                <a href="{{ route('settings') }}" style="text-decoration: underline; color: var(--danger);">Buat dulu di Settings</a>.
+                            @else
+                                Hubungi Admin.
+                            @endif
                         </div>
                     @endif
                 </div>
 
                 <div>
                     <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-main);">Username / Email</label>
-                    <input type="text" name="username" placeholder="Masukkan username..." required
+                    <input type="text" name="username" value="{{ request('username') }}" placeholder="Masukkan username..." required
                         style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem;">
                 </div>
 
@@ -51,7 +57,7 @@
 
             <div style="margin-bottom: 30px;">
                 <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-main);">Password</label>
-                <input type="text" name="password" placeholder="Masukkan password..." required
+                <input type="text" name="password" value="{{ request('password') }}" placeholder="Masukkan password..." required
                     style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: monospace; font-size: 0.95rem;">
             </div>
 
@@ -63,6 +69,12 @@
 
         </form>
     </div>
+
+    @if(request('username'))
+        <div style="text-align: center; color: var(--success); font-weight: 500; margin-top: 15px; font-size: 0.9rem;">
+            ✅ Data dari Generator berhasil dimuat otomatis.
+        </div>
+    @endif
 
 </div>
 
