@@ -7,7 +7,9 @@
     
     <link rel="icon" href="{{ asset('images/logo.jpg') }}" type="image/jpeg">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         /* --- ATURAN WARNA 60-30-10 --- */
         :root {
@@ -26,7 +28,13 @@
         body { font-family: 'Inter', sans-serif; background: var(--bg-main); color: var(--text-main); min-height: 100vh; display: flex; }
 
         /* --- SIDEBAR --- */
-        .sidebar { width: var(--sidebar-width); background: var(--bg-surface); border-right: 1px solid var(--border); height: 100vh; position: fixed; left: 0; top: 0; display: flex; flex-direction: column; padding: 24px; z-index: 10; }
+        .sidebar { 
+            width: var(--sidebar-width); background: var(--bg-surface); 
+            border-right: 1px solid var(--border); height: 100vh; 
+            position: fixed; left: 0; top: 0; 
+            display: flex; flex-direction: column; padding: 24px; z-index: 50; 
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
         .brand { font-size: 1.25rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
         .brand span { color: var(--primary); }
         .brand img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); }
@@ -42,7 +50,7 @@
         .btn-login { width: 100%; text-align: center; padding: 10px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; display: block; }
 
         /* --- CONTENT --- */
-        .main-wrapper { flex: 1; margin-left: var(--sidebar-width); padding: 40px; position: relative; z-index: 1; }
+        .main-wrapper { flex: 1; margin-left: var(--sidebar-width); padding: 40px; position: relative; z-index: 1; transition: margin-left 0.3s; }
         .card { background: var(--bg-surface); border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); padding: 24px; margin-bottom: 24px; }
         .page-header { margin-bottom: 30px; }
         .page-title { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
@@ -66,9 +74,30 @@
         .btn-modal-cancel { background: white; border: 1px solid var(--border); color: var(--text-main); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; transition: 0.2s; }
         .btn-modal-delete { background: var(--danger); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; transition: 0.2s; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3); }
         
-        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); transition: 0.3s; } .main-wrapper { margin-left: 0; padding: 20px; } }
+        /* --- MOBILE ELEMENTS --- */
+        .mobile-toggle { display: none; position: fixed; top: 15px; left: 15px; z-index: 100; background: white; border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .sidebar-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 40; backdrop-filter: blur(2px); }
+
+        /* --- MEDIA QUERIES (MOBILE RESPONSIVE) --- */
+        @media (max-width: 768px) { 
+            .sidebar { transform: translateX(-100%); box-shadow: none; }
+            .sidebar.active { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.1); }
+            
+            .main-wrapper { margin-left: 0; padding: 20px; padding-top: 80px; } /* Tambah padding atas utk tombol menu */
+            
+            .mobile-toggle { display: flex; align-items: center; justify-content: center; }
+            .sidebar-backdrop.show { display: block; }
+
+            /* Agar tabel bisa di-scroll di HP */
+            .card { overflow-x: auto; }
+            table { min-width: 600px; } /* Paksa tabel lebar agar trigger scroll */
+            
+            /* Grid Akun jadi 1 kolom di HP */
+            .page-title { font-size: 1.25rem; }
+        }
     </style>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
     <script>
         // --- 1. NOTIFIKASI TOAST ---
         window.showToast = function(message) {
@@ -101,16 +130,14 @@
             }
         };
 
-        // --- 3. GLOBAL DELETE (PERBAIKAN UTAMA) ---
-        let deleteUrlTarget = ''; // Kita simpan URL-nya, bukan Form-nya
-
+        // --- 3. GLOBAL DELETE ---
+        let deleteUrlTarget = ''; 
         window.confirmDelete = function(url) {
-            deleteUrlTarget = url; // Simpan URL penghapusan
+            deleteUrlTarget = url; 
             const modal = document.getElementById('confirm-modal');
             modal.style.display = 'flex';
             setTimeout(() => { modal.classList.add('show'); }, 10);
         };
-
         window.closeModal = function() {
             const modal = document.getElementById('confirm-modal');
             modal.classList.remove('show');
@@ -118,13 +145,24 @@
             deleteUrlTarget = '';
         };
 
+        // --- 4. MOBILE SIDEBAR TOGGLE ---
+        window.toggleSidebar = function() {
+            const sidebar = document.querySelector('.sidebar');
+            const backdrop = document.querySelector('.sidebar-backdrop');
+            sidebar.classList.toggle('active');
+            backdrop.classList.toggle('show');
+        }
+
+        // --- INIT SCRIPTS ---
         document.addEventListener('DOMContentLoaded', function() {
-            // Jika tombol HAPUS di modal ditekan
+            // NProgress Config
+            NProgress.configure({ showSpinner: false, speed: 500 });
+            
+            // Delete Modal Listener
             const confirmBtn = document.getElementById('confirm-btn-action');
             if(confirmBtn) {
                 confirmBtn.onclick = function() {
                     if (deleteUrlTarget) {
-                        // Masukkan URL ke form rahasia dan submit
                         const globalForm = document.getElementById('global-delete-form');
                         globalForm.action = deleteUrlTarget;
                         globalForm.submit();
@@ -132,19 +170,41 @@
                     closeModal();
                 };
             }
-            // Tutup modal jika klik luar
+            
+            // Close Modals on Outside Click
             const modalOverlay = document.getElementById('confirm-modal');
-            if(modalOverlay) {
-                modalOverlay.onclick = function(e) { if (e.target === this) closeModal(); };
-            }
+            if(modalOverlay) modalOverlay.onclick = function(e) { if (e.target === this) closeModal(); };
+
+            // Close Mobile Sidebar on Link Click
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if(window.innerWidth <= 768) toggleSidebar();
+                });
+            });
+
+            // NProgress Trigger
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('a');
+                if (link && link.href && !link.href.startsWith('#') && !link.target && link.hostname === window.location.hostname) {
+                    NProgress.start();
+                }
+            });
+            document.addEventListener('submit', function(e) { NProgress.start(); });
+            window.addEventListener('pageshow', function() { NProgress.done(); });
         });
     </script>
 </head>
 <body>
 
+    <button class="mobile-toggle" onclick="toggleSidebar()">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+
+    <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
     <form id="global-delete-form" method="POST" style="display: none;">
-        @csrf
-        @method('DELETE')
+        @csrf @method('DELETE')
     </form>
 
     <div class="toast-container" id="toast-container">
@@ -187,20 +247,20 @@
             </a>
             <a href="{{ route('account.create') }}" class="nav-link {{ Request::is('input') ? 'active' : '' }}">
                 <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                Input Akun
+                Input Manual
             </a>
             <a href="{{ route('account.log') }}" class="nav-link {{ Request::is('activity-log') ? 'active' : '' }}">
                 <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Log Aktivitas
             </a>
             @if(Auth::user()->role == 'admin')
+            <a href="{{ route('settings') }}" class="nav-link {{ Request::is('settings') ? 'active' : '' }}">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                Settings Toko
+            </a>
             <a href="{{ route('workers.index') }}" class="nav-link {{ Request::is('manage-workers') ? 'active' : '' }}">
                 <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                 Kelola Workers
-            </a>
-            <a href="{{ route('settings') }}" class="nav-link {{ Request::is('settings') ? 'active' : '' }}">
-                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                Settings
             </a>
             @endif
             @endauth
@@ -226,7 +286,6 @@
         if(typeof particlesJS !== 'undefined') {
             particlesJS("particles-js", { "particles": { "number": { "value": 40 }, "color": { "value": "#cbd5e1" }, "shape": { "type": "circle" }, "opacity": { "value": 0.5 }, "size": { "value": 3 }, "line_linked": { "enable": true, "distance": 150, "color": "#cbd5e1", "opacity": 0.4, "width": 1 }, "move": { "enable": true, "speed": 1 } }, "interactivity": { "events": { "onhover": { "enable": true, "mode": "grab" } } } });
         }
-        setTimeout(() => { const t = document.querySelector('.toast-box'); if(t) t.style.display = 'none'; }, 3000);
     </script>
 </body>
 </html>
