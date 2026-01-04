@@ -99,6 +99,13 @@
         .mobile-toggle { display: none; position: fixed; top: 15px; left: 15px; z-index: 100; background: white; border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .sidebar-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 40; backdrop-filter: blur(2px); }
 
+        /* --- UTILITY CLASSES TAMBAHAN --- */
+        .grid-workers { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 20px; 
+        }
+
         /* --- MEDIA QUERIES (MOBILE RESPONSIVE) --- */
         @media (max-width: 768px) { 
             .sidebar { transform: translateX(-100%); box-shadow: none; }
@@ -109,14 +116,18 @@
             .mobile-toggle { display: flex; align-items: center; justify-content: center; }
             .sidebar-backdrop.show { display: block; }
 
-            /* Tabel Scrollable */
+            /* Tabel Scrollable & Padat */
             .card { overflow-x: auto; }
-            table { min-width: 600px; }
+            table { min-width: 600px; } 
+            th, td { padding: 12px 15px !important; font-size: 0.85rem; } /* Perkecil teks tabel di HP */
             
             /* Responsive Utilities Update */
             .grid-responsive { grid-template-columns: 1fr; gap: 24px; }
+            .grid-workers { grid-template-columns: 1fr; } /* 1 Kolom di HP */
+            
             .header-responsive { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .header-responsive button { width: 100%; justify-content: center; }
+            .header-responsive > div { width: 100%; }
+            .header-responsive button, .header-responsive a { width: 100%; justify-content: center; }
         }
     </style>
 
