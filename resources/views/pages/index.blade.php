@@ -2,12 +2,12 @@
 
 @section('content')
 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <div class="header-responsive">
         <div>
             <h1 class="page-title">Database Akun</h1>
             <p class="page-subtitle">Kelola stok akun game Anda di sini.</p>
         </div>
-        <a href="{{ route('account.create') }}" style="background: var(--primary); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
+        <a href="{{ route('account.create') }}" style="background: var(--primary); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; white-space: nowrap;">
             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             Tambah Akun
         </a>
@@ -20,12 +20,12 @@
                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
                     {{ $category }}
                 </h3>
-                <span style="background: #eef2ff; color: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">
+                <span style="background: #eef2ff; color: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; white-space: nowrap;">
                     {{ count($items) }} ITEM
                 </span>
             </div>
             
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+            <div class="grid-workers">
                 @foreach($items as $acc)
                 <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 15px; transition: 0.2s; position: relative;">
                     
@@ -38,20 +38,18 @@
                             style="border: 1px solid var(--border); background: white; color: var(--text-main); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
                             COPY
                         </button>
-                            
+                        
                         @if(Auth::user()->role == 'admin')
-                            
-                            <button onclick="openEditModal('{{ $acc->id }}', '{{ $acc->username }}', '{{ $acc->password }}')"
-                                style="border: 1px solid var(--border); background: white; color: var(--primary); padding: 5px 8px; border-radius: 6px; cursor: pointer;">
-                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                            </button>
+                        <button onclick="openEditModal('{{ $acc->id }}', '{{ $acc->username }}', '{{ $acc->password }}')"
+                            style="border: 1px solid var(--border); background: white; color: var(--primary); padding: 5px 8px; border-radius: 6px; cursor: pointer;">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        </button>
 
-                            <button type="button" 
-                                onclick="confirmDelete('{{ route('account.delete', $acc->id) }}')"
-                                style="border: 1px solid #fecaca; background: #fef2f2; color: var(--danger); padding: 5px 8px; border-radius: 6px; cursor: pointer;">
-                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
-
+                        <button type="button" 
+                            onclick="confirmDelete('{{ route('account.delete', $acc->id) }}')"
+                            style="border: 1px solid #fecaca; background: #fef2f2; color: var(--danger); padding: 5px 8px; border-radius: 6px; cursor: pointer;">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
                         @endif
                     </div>
                 </div>
@@ -90,12 +88,8 @@
                     <div style="display: flex; gap: 10px;">
                         <input type="text" name="password" id="edit-password-input" required
                             style="flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-family: monospace;">
-                        
                         <button type="button" onclick="generateRandomPass()" 
-                            style="background: #eef2ff; border: 1px solid var(--primary); color: var(--primary); padding: 0 15px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 5px;" title="Acak Password 8 Digit">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                            ACAK
-                        </button>
+                            style="background: #eef2ff; border: 1px solid var(--primary); color: var(--primary); padding: 0 15px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.8rem;">ACAK</button>
                     </div>
                 </div>
 
@@ -109,44 +103,25 @@
 
     <script>
         function openEditModal(id, username, currentPass) {
-            // Set URL Form sesuai ID akun
             document.getElementById('edit-form').action = "/account/" + id;
-            
-            // Isi tampilan
             document.getElementById('edit-username-display').innerText = username;
             document.getElementById('edit-password-input').value = currentPass;
-
-            // Buka Modal
             const modal = document.getElementById('edit-modal');
             modal.style.display = 'flex';
             setTimeout(() => { modal.classList.add('show'); }, 10);
         }
-
         function closeEditModal() {
             const modal = document.getElementById('edit-modal');
             modal.classList.remove('show');
             setTimeout(() => { modal.style.display = 'none'; }, 200);
         }
-
-        // GENERATOR 8 DIGIT (Huruf Besar, Kecil, Angka)
         function generateRandomPass() {
             const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             let pass = "";
-            for(let i=0; i<8; i++) {
-                pass += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
+            for(let i=0; i<8; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
             document.getElementById('edit-password-input').value = pass;
-            
-            // Opsional: Efek visual
-            const input = document.getElementById('edit-password-input');
-            input.style.borderColor = 'var(--primary)';
-            setTimeout(() => input.style.borderColor = 'var(--border)', 300);
         }
-
-        // Tutup modal jika klik luar
-        document.getElementById('edit-modal').onclick = function(e) {
-            if(e.target === this) closeEditModal();
-        };
+        document.getElementById('edit-modal').onclick = function(e) { if(e.target === this) closeEditModal(); };
     </script>
 
 @endsection
