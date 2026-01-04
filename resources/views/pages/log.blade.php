@@ -26,7 +26,7 @@
             <thead>
                 <tr style="background: #f8fafc; border-bottom: 1px solid var(--border);">
                     <th style="padding: 16px 24px; font-weight: 600; font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">
-                        Waktu & Tanggal
+                        Waktu
                     </th>
                     <th style="padding: 16px 24px; font-weight: 600; font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">
                         Worker
@@ -35,7 +35,7 @@
                         Aktivitas
                     </th>
                     <th style="padding: 16px 24px; font-weight: 600; font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">
-                        Detail
+                        Akun
                     </th>
                 </tr>
             </thead>
@@ -44,49 +44,34 @@
                 <tr style="border-bottom: 1px solid #f1f5f9; transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
                     
                     <td style="padding: 16px 24px; vertical-align: middle;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="background: #e0e7ff; color: var(--primary); padding: 8px; border-radius: 50%;">
-                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </div>
-                            <div>
-                                <div style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">
-                                    {{ $log->created_at->format('H:i') }}
-                                </div>
-                                <div style="font-size: 0.8rem; color: #94a3b8;">
-                                    {{ $log->created_at->format('d M Y') }}
-                                </div>
-                            </div>
+                        <div style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">
+                            {{ $log->created_at->format('H:i') }}
+                        </div>
+                        <div style="font-size: 0.75rem; color: #94a3b8;">
+                            {{ $log->created_at->format('d/m') }}
                         </div>
                     </td>
 
                     <td style="padding: 16px 24px; vertical-align: middle;">
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="width: 32px; height: 32px; background: var(--text-main); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem;">
-                                {{ substr($log->user->name ?? '?', 0, 1) }}
-                            </div>
-                            <div>
-                                <div style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">
-                                    {{ $log->user->name ?? 'User Terhapus' }}
+                            <div style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">
+                                {{ explode(' ', $log->user->name ?? 'User')[0] }} 
                                 </div>
-                                <div style="font-size: 0.75rem; color: #64748b;">
-                                    {{ ($log->user->role ?? '') == 'admin' ? 'Adm' : 'Stf' }}
-                                </div>
-                            </div>
                         </div>
                     </td>
 
                     <td style="padding: 16px 24px; vertical-align: middle;">
-                        <span style="background: #ecfdf5; color: #059669; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700;">
+                        <span style="background: #ecfdf5; color: #059669; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700;">
                             INPUT
                         </span>
-                        <div style="margin-top: 5px; font-size: 0.85rem; font-weight: 500; color: var(--text-main);">
+                        <div style="margin-top: 2px; font-size: 0.8rem; font-weight: 500; color: var(--text-main);">
                             {{ $log->title }}
                         </div>
                     </td>
 
                     <td style="padding: 16px 24px; vertical-align: middle;">
-                        <div style="font-family: monospace; font-size: 0.85rem; color: #475569; background: #f1f5f9; padding: 6px 10px; border-radius: 6px; display: inline-block;">
-                            {{ $log->username }}
+                        <div style="font-family: monospace; font-size: 0.8rem; color: #475569; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; display: inline-block;">
+                            {{ \Illuminate\Support\Str::limit($log->username, 15) }}
                         </div>
                     </td>
 
@@ -94,7 +79,7 @@
                 @empty
                 <tr>
                     <td colspan="4" style="text-align: center; padding: 40px;">
-                        <div style="color: #cbd5e1;">Belum ada data.</div>
+                        <div style="color: #cbd5e1;">Belum ada log.</div>
                     </td>
                 </tr>
                 @endforelse
